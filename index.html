@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ESP32 Improv WiFi Firmware Flasher</title>
+    <meta name="description" content="Flash ESP32 Improv WiFi firmware directly from your browser">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 40px;
+            margin: 20px 0;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+        
+        .upload-section {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .upload-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        
+        .upload-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .requirements {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .steps {
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .feature:hover {
+            border-color: #007bff;
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .unsupported {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .not-allowed {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #7f8c8d;
+        }
+        
+        ol {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin: 10px 0;
+        }
+    </style>
+    <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🚀 ESP32 Firmware Flasher</h1>
+            <p class="subtitle">Flash your ESP32 with Improv WiFi support directly from your browser!</p>
+            
+            <div class="upload-section">
+                <esp-web-install-button manifest="./manifest.json">
+                    <button slot="activate" class="upload-button">
+                        📱 Upload Firmware
+                    </button>
+                    <span slot="unsupported" class="unsupported">
+                        ❌ Your browser doesn't support this feature. Please use Chrome or Edge.
+                    </span>
+                    <span slot="not-allowed" class="not-allowed">
+                        ⚠️ This page must be served over HTTPS. Please use a secure connection.
+                    </span>
+                </esp-web-install-button>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">📶</div>
+                    <h3>WiFi Setup</h3>
+                    <p>Easy WiFi configuration through your browser after firmware upload</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Web Interface</h3>
+                    <p>Built-in web server with device information and controls</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Fast Setup</h3>
+                    <p>One-click firmware installation with automatic WiFi provisioning</p>
+                </div>
+            </div>
+
+            <div class="requirements">
+                <h3>📋 Requirements</h3>
+                <ul>
+                    <li><strong>Browser:</strong> Google Chrome or Microsoft Edge (latest version)</li>
+                    <li><strong>Device:</strong> ESP32 development board</li>
+                    <li><strong>Cable:</strong> USB data cable (not charge-only)</li>
+                    <li><strong>Connection:</strong> HTTPS website (required for Web Serial API)</li>
+                </ul>
+            </div>
+
+            <div class="steps">
+                <h3>🔧 Installation Steps</h3>
+                <ol>
+                    <li><strong>Connect your ESP32</strong> to your computer via USB cable</li>
+                    <li><strong>Click "Upload Firmware"</strong> button above</li>
+                    <li><strong>Select your device</strong> from the browser popup (usually shows as "CP210x" or "CH340")</li>
+                    <li><strong>Wait for installation</strong> to complete (takes about 30 seconds)</li>
+                    <li><strong>Configure WiFi</strong> when prompted by the browser</li>
+                    <li><strong>Access your device</strong> via the provided web link</li>
+                </ol>
+            </div>
+
+            <div class="warning">
+                <strong>⚠️ Important Notes:</strong>
+                <ul>
+                    <li>Make sure your ESP32 is not running any serial monitor during flashing</li>
+                    <li>Some ESP32 boards may require you to hold the BOOT button during connection</li>
+                    <li>If flashing fails, try a different USB cable or port</li>
+                    <li>The first boot after flashing may take up to 30 seconds</li>
+                </ul>
+            </div>
+
+            <div class="footer">
+                <p>Powered by <a href="https://esphome.github.io/esp-web-tools/" target="_blank">ESP Web Tools</a> | 
+                   <a href="https://www.improv-wifi.com/" target="_blank">Improv WiFi Standard</a></p>
+                <p>Open source firmware for ESP32 with ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            const installButton = document.querySelector('esp-web-install-button');
+            
+            if (installButton) {
+                installButton.addEventListener('state-changed', (e) => {
+                    console.log('ESP Web Tools state:', e.detail.state);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
