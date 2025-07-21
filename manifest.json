@@ -2,7 +2,7 @@
   "name": "Seeed C6 Antenna Demo",
   "version": "1.0.0",
   "new_install_prompt_erase": true,
-  "new_install_improv_wait_time": 30,
+  "new_install_improv_wait_time": 45,
   "builds": [
     {
       "chipFamily": "ESP32",
