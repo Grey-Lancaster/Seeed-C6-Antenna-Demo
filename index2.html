@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+<div class="step" id="testStep" style="display: none;">
+            <h3>Step 3: Test Device</h3>
+            <button onclick="sendCommand('STATUS')">📊 Get Status</button>
+            <button onclick="sendCommand('LED')">💡 Test LED</button>
+            <button onclick="sendCommand('ANT:1')">📶 Internal Antenna</button>
+            <button onclick="sendCommand('ANT:2')">📡 External Antenna</button>
+        </div><!DOCTYPE html>
 <html>
 <head>
     <title>ESP32-C6 WiFi Setup</title>
@@ -124,6 +130,22 @@
         let reader;
         let writer;
 
+        async function sendCommand(command) {
+            if (!writer) {
+                alert('Not connected to device');
+                return;
+            }
+            
+            try {
+                const commandWithNewline = command + '\r\n';
+                const data = new TextEncoder().encode(commandWithNewline);
+                await writer.write(data);
+                log(`Sent: ${command}`);
+            } catch (error) {
+                log('Send error: ' + error.message);
+            }
+        }
+
         function log(message) {
             const logElement = document.getElementById('log');
             const timestamp = new Date().toLocaleTimeString();
@@ -165,11 +187,27 @@
                     const text = new TextDecoder().decode(value);
                     log('Received: ' + text.trim());
                     
-                    // Check for success responses
-                    if (text.includes('WiFi connected') || text.includes('IP:')) {
+                    // Check for specific responses
+                    if (text.includes('Connected with') || text.includes('WiFi Connected') || text.includes('IP:')) {
                         document.getElementById('statusMessage').innerHTML = 
                             '<div class="status success">🎉 WiFi configured successfully!</div>';
                         document.getElementById('statusStep').style.display = 'block';
+                    }
+                    
+                    if (text.includes('WiFi connection failed') || text.includes('failed on both antennas')) {
+                        document.getElementById('statusMessage').innerHTML = 
+                            '<div class="status error">❌ WiFi connection failed. Check credentials.</div>';
+                        document.getElementById('statusStep').style.display = 'block';
+                    }
+                    
+                    // Show antenna switching
+                    if (text.includes('Switched to INTERNAL') || text.includes('Switched to EXTERNAL')) {
+                        log('✅ ' + text.trim());
+                    }
+                    
+                    // Show RSSI readings
+                    if (text.includes('RSSI:')) {
+                        log('📶 ' + text.trim());
                     }
                 }
             } catch (error) {
