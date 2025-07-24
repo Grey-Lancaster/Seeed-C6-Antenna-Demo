@@ -187,14 +187,17 @@
             }
             
             try {
-                // Send simple command format: WIFI:ssid:password
-                const command = `WIFI:${ssid}:${password}\n`;
+                // Send command with explicit line ending and more debugging
+                const command = `WIFI:${ssid}:${password}\r\n`;
+                console.log('Sending command:', command);
+                log(`Sending: ${command.trim()}`);
+                
                 const data = new TextEncoder().encode(command);
                 await writer.write(data);
                 
-                log(`Sent WiFi config: ${ssid}`);
+                log(`WiFi config sent - SSID: ${ssid}, Password length: ${password.length}`);
                 document.getElementById('statusMessage').innerHTML = 
-                    '<div class="status info">⏳ Configuring WiFi...</div>';
+                    '<div class="status info">⏳ Configuring WiFi... Check serial output</div>';
                 document.getElementById('statusStep').style.display = 'block';
                 
             } catch (error) {
