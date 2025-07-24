@@ -106,16 +106,16 @@
             <div id="connectionStatus"></div>
         </div>
 
-        <div class="step" id="testStep" style="display: none;">
+        <div class="step" id="testStep">
             <h3>Step 2: Test Device Functions</h3>
-            <p>Test these basic functions first:</p>
+            <p>Test these basic functions:</p>
             <button onclick="sendCommand('STATUS')">📊 Get Status</button>
             <button onclick="sendCommand('LED')">💡 Test LED</button>
             <button onclick="sendCommand('ANT:1')">📶 Internal Antenna</button>
             <button onclick="sendCommand('ANT:2')">📡 External Antenna</button>
         </div>
 
-        <div class="step" id="wifiStep" style="display: none;">
+        <div class="step" id="wifiStep">
             <h3>Step 3: Configure WiFi</h3>
             <input type="text" id="ssid" placeholder="WiFi Network Name (SSID)" value="shop2" />
             <input type="password" id="password" placeholder="WiFi Password" />
@@ -152,8 +152,6 @@
                 
                 document.getElementById('connectionStatus').innerHTML = 
                     '<div class="status success">✅ Connected successfully!</div>';
-                document.getElementById('testStep').style.display = 'block';
-                document.getElementById('wifiStep').style.display = 'block';
                 document.getElementById('connectBtn').disabled = true;
                 
                 log('Connected to ESP32-C6');
