@@ -1,10 +1,4 @@
-<div class="step" id="testStep" style="display: none;">
-            <h3>Step 3: Test Device</h3>
-            <button onclick="sendCommand('STATUS')">📊 Get Status</button>
-            <button onclick="sendCommand('LED')">💡 Test LED</button>
-            <button onclick="sendCommand('ANT:1')">📶 Internal Antenna</button>
-            <button onclick="sendCommand('ANT:2')">📡 External Antenna</button>
-        </div><!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>ESP32-C6 WiFi Setup</title>
@@ -48,6 +42,7 @@
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0,255,136,0.3);
             transition: all 0.3s ease;
+            margin: 5px;
         }
         button:hover {
             transform: translateY(-2px);
@@ -68,6 +63,7 @@
             background: rgba(255,255,255,0.9);
             color: #333;
             font-size: 16px;
+            box-sizing: border-box;
         }
         .status {
             margin: 15px 0;
@@ -92,7 +88,7 @@
             background: rgba(0,0,0,0.3);
             padding: 15px;
             border-radius: 5px;
-            height: 150px;
+            height: 200px;
             overflow-y: auto;
             font-family: monospace;
             font-size: 12px;
@@ -102,7 +98,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🚀 ESP32-C6 WiFi Setup</h1>
+        <h1>🚀 ESP32-C6 WiFi Setup & Test</h1>
         
         <div class="step">
             <h3>Step 1: Connect Device</h3>
@@ -110,9 +106,18 @@
             <div id="connectionStatus"></div>
         </div>
 
+        <div class="step" id="testStep" style="display: none;">
+            <h3>Step 2: Test Device Functions</h3>
+            <p>Test these basic functions first:</p>
+            <button onclick="sendCommand('STATUS')">📊 Get Status</button>
+            <button onclick="sendCommand('LED')">💡 Test LED</button>
+            <button onclick="sendCommand('ANT:1')">📶 Internal Antenna</button>
+            <button onclick="sendCommand('ANT:2')">📡 External Antenna</button>
+        </div>
+
         <div class="step" id="wifiStep" style="display: none;">
-            <h3>Step 2: Configure WiFi</h3>
-            <input type="text" id="ssid" placeholder="WiFi Network Name (SSID)" />
+            <h3>Step 3: Configure WiFi</h3>
+            <input type="text" id="ssid" placeholder="WiFi Network Name (SSID)" value="shop2" />
             <input type="password" id="password" placeholder="WiFi Password" />
             <button onclick="configureWifi()">Configure WiFi</button>
         </div>
@@ -129,22 +134,6 @@
         let port;
         let reader;
         let writer;
-
-        async function sendCommand(command) {
-            if (!writer) {
-                alert('Not connected to device');
-                return;
-            }
-            
-            try {
-                const commandWithNewline = command + '\r\n';
-                const data = new TextEncoder().encode(commandWithNewline);
-                await writer.write(data);
-                log(`Sent: ${command}`);
-            } catch (error) {
-                log('Send error: ' + error.message);
-            }
-        }
 
         function log(message) {
             const logElement = document.getElementById('log');
@@ -163,6 +152,7 @@
                 
                 document.getElementById('connectionStatus').innerHTML = 
                     '<div class="status success">✅ Connected successfully!</div>';
+                document.getElementById('testStep').style.display = 'block';
                 document.getElementById('wifiStep').style.display = 'block';
                 document.getElementById('connectBtn').disabled = true;
                 
@@ -212,6 +202,22 @@
                 }
             } catch (error) {
                 log('Read error: ' + error.message);
+            }
+        }
+
+        async function sendCommand(command) {
+            if (!writer) {
+                alert('Not connected to device');
+                return;
+            }
+            
+            try {
+                const commandWithNewline = command + '\r\n';
+                const data = new TextEncoder().encode(commandWithNewline);
+                await writer.write(data);
+                log(`Sent: ${command}`);
+            } catch (error) {
+                log('Send error: ' + error.message);
             }
         }
 
