@@ -2,78 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ESP32‑C6 Wi‑Fi Provisioning</title>
-  <style>
-    body { font-family: sans-serif; margin: 20px; }
-    button { margin: 5px 0; padding: 8px 12px; }
-    input { padding: 6px; width: 200px; }
-    #form { margin-top: 20px; }
-    #status { margin-top: 20px; font-weight: bold; }
-  </style>
+  <title>ESP Web Tools Provision</title>
+  <!-- 1) Load the ESP Web Tools install button component -->
+  <script
+    type="module"
+    src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"
+  ></script> <!-- :contentReference[oaicite:0]{index=0} -->
 </head>
 <body>
-  <h1>Wi‑Fi Setup</h1>
-  <p>
-    1. Connect to the AP <strong>ESP32‑C6‑Prov</strong><br>
-    2. Open <code>http://192.168.4.1</code> in your browser
-  </p>
-  <button onclick="scan()">Scan for Networks</button>
-  <div id="networks"></div>
+  <h1>ESP32‑C6 Web Flash & Provision</h1>
 
-  <div id="form" style="display:none;">
-    <h2>Configure Network</h2>
-    <label>SSID:<br><input id="ssid" readonly></label><br><br>
-    <label>Password:<br><input id="pass" type="password" placeholder="••••••••"></label><br><br>
-    <button onclick="submitCreds()">Connect</button>
-  </div>
+  <!-- 2) This is the “Connect / Flash Firmware / Configure Wi‑Fi” button -->
+  <esp-web-install-button manifest="manifest.json"></esp-web-install-button>  
 
-  <div id="status"></div>
-
-  <script>
-    // 1) GET /prov‑scan → [{ssid, rssi},…]
-    async function scan() {
-      document.getElementById('networks').innerText = 'Scanning…';
-      try {
-        const resp = await fetch('/prov-scan');
-        const nets = await resp.json();
-        let html = '<h2>Select a network</h2>';
-        nets.forEach(n => {
-          html += `<button onclick="select('${n.ssid}')">${n.ssid} (${n.rssi} dBm)</button><br>`;
-        });
-        document.getElementById('networks').innerHTML = html;
-      } catch (e) {
-        document.getElementById('networks').innerText = 'Scan failed.';
-      }
-    }
-
-    // 2) User picks SSID
-    function select(ssid) {
-      document.getElementById('ssid').value = ssid;
-      document.getElementById('form').style.display = 'block';
-    }
-
-    // 3) POST /prov‑config { ssid, passphrase }
-    async function submitCreds() {
-      const ssid = document.getElementById('ssid').value;
-      const pass = document.getElementById('pass').value;
-      document.getElementById('status').innerText = 'Provisioning…';
-      try {
-        const resp = await fetch('/prov-config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ssid, passphrase: pass })
-        });
-        if (resp.ok) {
-          document.getElementById('status').innerText = 
-            '✅ Success! The device will connect now.';
-        } else {
-          document.getElementById('status').innerText = 
-            '❌ Provisioning failed. Try again.';
-        }
-      } catch (e) {
-        document.getElementById('status').innerText = '❌ Error sending credentials.';
-      }
-    }
-  </script>
+  <!-- 
+    Once clicked it will:
+     • Prompt you to select the ESP32‑C6 over Web Serial  
+     • Flash the correct firmware from your manifest  
+     • (If your firmware implements Improv Serial) immediately
+       drop into the Wi‑Fi provisioning flow  
+  -->
 </body>
 </html>
