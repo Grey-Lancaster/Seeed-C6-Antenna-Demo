@@ -1,260 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ESP32-C6 WiFi Setup</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        .container {
-            background: rgba(255,255,255,0.1);
-            padding: 30px;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        .step {
-            margin: 20px 0;
-            padding: 15px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 8px;
-            border-left: 4px solid #00ff88;
-        }
-        button {
-            background: linear-gradient(45deg, #00ff88, #00d4ff);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,255,136,0.3);
-            transition: all 0.3s ease;
-            margin: 5px;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,255,136,0.4);
-        }
-        button:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 5px;
-            background: rgba(255,255,255,0.9);
-            color: #333;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .status {
-            margin: 15px 0;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-weight: bold;
-        }
-        .success {
-            background: rgba(0,255,136,0.2);
-            border: 1px solid #00ff88;
-        }
-        .error {
-            background: rgba(255,100,100,0.2);
-            border: 1px solid #ff6464;
-        }
-        .info {
-            background: rgba(100,200,255,0.2);
-            border: 1px solid #64c8ff;
-        }
-        #log {
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 5px;
-            height: 200px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 12px;
-            margin-top: 15px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>ESP32‑C6 Wi‑Fi Provisioning</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    button { margin: 5px 0; padding: 8px 12px; }
+    input { padding: 6px; width: 200px; }
+    #form { margin-top: 20px; }
+    #status { margin-top: 20px; font-weight: bold; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚀 ESP32-C6 WiFi Setup & Test</h1>
-        
-        <div class="step">
-            <h3>Step 1: Connect Device</h3>
-            <button id="connectBtn" onclick="connectDevice()">Connect to ESP32-C6</button>
-            <div id="connectionStatus"></div>
-        </div>
+  <h1>Wi‑Fi Setup</h1>
+  <p>
+    1. Connect to the AP <strong>ESP32‑C6‑Prov</strong><br>
+    2. Open <code>http://192.168.4.1</code> in your browser
+  </p>
+  <button onclick="scan()">Scan for Networks</button>
+  <div id="networks"></div>
 
-        <div class="step" id="testStep">
-            <h3>Step 2: Test Device Functions</h3>
-            <p>Test these basic functions:</p>
-            <button onclick="sendCommand('STATUS')">📊 Get Status</button>
-            <button onclick="sendCommand('LED')">💡 Test LED</button>
-            <button onclick="sendCommand('ANT:1')">📶 Internal Antenna</button>
-            <button onclick="sendCommand('ANT:2')">📡 External Antenna</button>
-        </div>
+  <div id="form" style="display:none;">
+    <h2>Configure Network</h2>
+    <label>SSID:<br><input id="ssid" readonly></label><br><br>
+    <label>Password:<br><input id="pass" type="password" placeholder="••••••••"></label><br><br>
+    <button onclick="submitCreds()">Connect</button>
+  </div>
 
-        <div class="step" id="wifiStep">
-            <h3>Step 3: Configure WiFi</h3>
-            <input type="text" id="ssid" placeholder="WiFi Network Name (SSID)" value="shop2" />
-            <input type="password" id="password" placeholder="WiFi Password" />
-            <button onclick="configureWifi()">Configure WiFi</button>
-        </div>
+  <div id="status"></div>
 
-        <div class="step" id="statusStep" style="display: none;">
-            <h3>Status</h3>
-            <div id="statusMessage"></div>
-        </div>
+  <script>
+    // 1) GET /prov‑scan → [{ssid, rssi},…]
+    async function scan() {
+      document.getElementById('networks').innerText = 'Scanning…';
+      try {
+        const resp = await fetch('/prov-scan');
+        const nets = await resp.json();
+        let html = '<h2>Select a network</h2>';
+        nets.forEach(n => {
+          html += `<button onclick="select('${n.ssid}')">${n.ssid} (${n.rssi} dBm)</button><br>`;
+        });
+        document.getElementById('networks').innerHTML = html;
+      } catch (e) {
+        document.getElementById('networks').innerText = 'Scan failed.';
+      }
+    }
 
-        <div id="log"></div>
-    </div>
+    // 2) User picks SSID
+    function select(ssid) {
+      document.getElementById('ssid').value = ssid;
+      document.getElementById('form').style.display = 'block';
+    }
 
-    <script>
-        let port;
-        let reader;
-        let writer;
-
-        function log(message) {
-            const logElement = document.getElementById('log');
-            const timestamp = new Date().toLocaleTimeString();
-            logElement.innerHTML += `[${timestamp}] ${message}\n`;
-            logElement.scrollTop = logElement.scrollHeight;
-        }
-
-        async function connectDevice() {
-            try {
-                port = await navigator.serial.requestPort();
-                await port.open({ baudRate: 115200 });
-                
-                writer = port.writable.getWriter();
-                reader = port.readable.getReader();
-                
-                document.getElementById('connectionStatus').innerHTML = 
-                    '<div class="status success">✅ Connected successfully!</div>';
-                document.getElementById('connectBtn').disabled = true;
-                
-                log('Connected to ESP32-C6');
-                
-                // Start reading responses
-                readLoop();
-                
-            } catch (error) {
-                document.getElementById('connectionStatus').innerHTML = 
-                    '<div class="status error">❌ Connection failed: ' + error.message + '</div>';
-                log('Connection error: ' + error.message);
-            }
-        }
-
-        async function readLoop() {
-            try {
-                while (true) {
-                    const { value, done } = await reader.read();
-                    if (done) break;
-                    
-                    const text = new TextDecoder().decode(value);
-                    log('Received: ' + text.trim());
-                    
-                    // Check for specific responses
-                    if (text.includes('Connected with') || text.includes('WiFi Connected') || text.includes('IP:')) {
-                        document.getElementById('statusMessage').innerHTML = 
-                            '<div class="status success">🎉 WiFi configured successfully!</div>';
-                        document.getElementById('statusStep').style.display = 'block';
-                    }
-                    
-                    if (text.includes('WiFi connection failed') || text.includes('failed on both antennas')) {
-                        document.getElementById('statusMessage').innerHTML = 
-                            '<div class="status error">❌ WiFi connection failed. Check credentials.</div>';
-                        document.getElementById('statusStep').style.display = 'block';
-                    }
-                    
-                    // Show antenna switching
-                    if (text.includes('Switched to INTERNAL') || text.includes('Switched to EXTERNAL')) {
-                        log('✅ ' + text.trim());
-                    }
-                    
-                    // Show RSSI readings
-                    if (text.includes('RSSI:')) {
-                        log('📶 ' + text.trim());
-                    }
-                }
-            } catch (error) {
-                log('Read error: ' + error.message);
-            }
-        }
-
-        async function sendCommand(command) {
-            if (!writer) {
-                alert('Not connected to device');
-                return;
-            }
-            
-            try {
-                const commandWithNewline = command + '\r\n';
-                const data = new TextEncoder().encode(commandWithNewline);
-                await writer.write(data);
-                log(`Sent: ${command}`);
-            } catch (error) {
-                log('Send error: ' + error.message);
-            }
-        }
-
-        async function configureWifi() {
-            const ssid = document.getElementById('ssid').value;
-            const password = document.getElementById('password').value;
-            
-            if (!ssid) {
-                alert('Please enter WiFi network name');
-                return;
-            }
-            
-            try {
-                // Send command with explicit line ending and more debugging
-                const command = `WIFI:${ssid}:${password}\r\n`;
-                console.log('Sending command:', command);
-                log(`Sending: ${command.trim()}`);
-                
-                const data = new TextEncoder().encode(command);
-                await writer.write(data);
-                
-                log(`WiFi config sent - SSID: ${ssid}, Password length: ${password.length}`);
-                document.getElementById('statusMessage').innerHTML = 
-                    '<div class="status info">⏳ Configuring WiFi... Check serial output</div>';
-                document.getElementById('statusStep').style.display = 'block';
-                
-            } catch (error) {
-                document.getElementById('statusMessage').innerHTML = 
-                    '<div class="status error">❌ Failed to send config: ' + error.message + '</div>';
-                log('Send error: ' + error.message);
-            }
-        }
-
-        // Check if Web Serial API is supported
-        if ('serial' in navigator) {
-            log('Web Serial API supported');
+    // 3) POST /prov‑config { ssid, passphrase }
+    async function submitCreds() {
+      const ssid = document.getElementById('ssid').value;
+      const pass = document.getElementById('pass').value;
+      document.getElementById('status').innerText = 'Provisioning…';
+      try {
+        const resp = await fetch('/prov-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ssid, passphrase: pass })
+        });
+        if (resp.ok) {
+          document.getElementById('status').innerText = 
+            '✅ Success! The device will connect now.';
         } else {
-            document.body.innerHTML = '<div class="container"><h1>❌ Browser Not Supported</h1><p>Please use Chrome, Edge, or Opera browser.</p></div>';
+          document.getElementById('status').innerText = 
+            '❌ Provisioning failed. Try again.';
         }
-    </script>
+      } catch (e) {
+        document.getElementById('status').innerText = '❌ Error sending credentials.';
+      }
+    }
+  </script>
 </body>
 </html>
