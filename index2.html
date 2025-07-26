@@ -1,26 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ESP Web Tools Provision</title>
-  <!-- 1) Load the ESP Web Tools install button component -->
+  <meta charset="UTF-8" />
+  <title>ESP32‑C6 Web Flash & Provision</title>
   <script
     type="module"
     src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"
-  ></script> <!-- :contentReference[oaicite:0]{index=0} -->
+  ></script>
 </head>
 <body>
-  <h1>ESP32‑C6 Web Flash & Provision</h1>
-
-  <!-- 2) This is the “Connect / Flash Firmware / Configure Wi‑Fi” button -->
-  <esp-web-install-button manifest="manifest.json"></esp-web-install-button>  
-
-  <!-- 
-    Once clicked it will:
-     • Prompt you to select the ESP32‑C6 over Web Serial  
-     • Flash the correct firmware from your manifest  
-     • (If your firmware implements Improv Serial) immediately
-       drop into the Wi‑Fi provisioning flow  
-  -->
+  <h1>Flash & Configure Wi‑Fi</h1>
+  <p>Make sure your ESP32‑C6 is plugged in over USB.</p>
+  <esp-web-install-button manifest="manifest2.json"></esp-web-install-button>
 </body>
 </html>
