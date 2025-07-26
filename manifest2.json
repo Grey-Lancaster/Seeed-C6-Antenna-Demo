@@ -1,15 +1,15 @@
 {
-  "name": "ESP32‑C6 Device",
-  "version": "1.0.0",
+  "name": "esp_web_tools_example",
+  "version": "dev",
   "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32-C6",
       "parts": [
-        { "path": "bootloader.bin",      "offset": 4096 },
-        { "path": "partitions.bin",      "offset": 32768 },
-        { "path": "boot_app0.bin",       "offset": 57344 },
-        { "path": "firmware-merged.bin", "offset": 65536 }
+        {
+          "path": "firmware.factory.bin",
+          "offset": 0
+        }
       ]
     }
   ]
