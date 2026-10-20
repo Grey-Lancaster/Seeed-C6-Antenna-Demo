@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Seeed-C6-Antenna-Demo: an Improv WiFi (credentials over USB serial) demo with antenna switching for the Seeed XIAO ESP32-C6, built from the owner's working ESP32 Improv example. Public repo with no README. Note that what is committed on `main` is an early generic-ESP32 test version; see Gotchas.
+Seeed-C6-Antenna-Demo: an Improv WiFi (credentials over USB serial) demo with antenna switching for an ESP32-C6 board (the repo name says Seeed), built from the owner's working ESP32 Improv example. Public repo with no README. Note that what is committed on `main` is an early generic-ESP32 test version; see Gotchas.
 
 ## Layout
 - `platformio.ini` - env `esp32dev` (`espressif32@6.4.0`, Arduino, 115200 baud, `LED_BUILTIN=2`). No `lib_deps`: the Improv code is local.
